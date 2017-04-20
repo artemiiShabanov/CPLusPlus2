@@ -1,5 +1,9 @@
-// CPlusPlus2.cpp: определяет точку входа для консольного приложения.
-//#5
+// CPlusPlus2.cpp
+//#55. Модель компьютера характеризуется кодом и названием марки компьютера, 
+//типом процессора, частотой работы процессора, объемом оперативной памяти, 
+//объемом жесткого диска, объемом памяти видеокарты, стоимостью компьютера и
+//количеством экземпляров. Поиск по типу процессора, объему ОЗУ, памяти видеокарты 
+//и объему жесткого диска. 
 
 
 #include "stdafx.h"
@@ -107,7 +111,7 @@ int main()
 		{
 		case 1://INPUT
 			printMenuConsoleFile();
-			n = inputInt("Enter the command: ",0,2);
+			n = inputInt("Enter the command: ", 0, 2);
 			switch (n)
 			{
 			case 1:
@@ -123,7 +127,7 @@ int main()
 			break;
 		case 2://OUTPUT
 			printMenuConsoleFile();
-			n = inputInt("Enter the command:",0,2);
+			n = inputInt("Enter the command:", 0, 2);
 			switch (n)
 			{
 			case 1:
@@ -184,7 +188,7 @@ int main()
 			{
 				std::cout << "Record found \n";
 				printAction();
-				n = inputInt("Enter the command: ", 1, 3);
+				n = inputInt("Enter the command: ", 0, 3);
 				switch (n)
 				{
 				case 1:
@@ -195,6 +199,8 @@ int main()
 					break;
 				case 3:
 					cont.remove(it);
+					break;
+				case 0: 
 					break;
 				}
 			}

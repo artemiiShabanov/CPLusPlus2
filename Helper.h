@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -25,7 +25,7 @@ public:
 	int count;
 
 	Computer(int _code, std::string _mark, std::string _proc, int _freq, int _ram, int _hdd,
-			 int _vm, int _value, int _count)
+		int _vm, int _value, int _count)
 	{
 		code = _code;
 		mark = _mark;
@@ -62,13 +62,14 @@ public:
 
 	bool operator < (const Computer &comp)
 	{
-		return this->code < comp.code; //áûëî ==
+		return this->code < comp.code; //Ã¡Ã»Ã«Ã® ==
 	}
+
 };
 
 
-std::ostream& operator <<(std::ostream &os, const Computer &comp) {
-	os << "|| code: " + std::to_string(comp.code) + "  " +
+std::ostream& operator<<(std::ostream &os, const Computer &comp) {
+	/*os << "|| code: " + std::to_string(comp.code) + "  " +
 		"mark: " + comp.mark + "  " +
 		"proc: " + comp.processor + "  " +
 		"freq: " + std::to_string(comp.frequency) + "  " +
@@ -76,7 +77,16 @@ std::ostream& operator <<(std::ostream &os, const Computer &comp) {
 		"hdd: " + std::to_string(comp.hdd_capacity) + "  " +
 		"vm: " + std::to_string(comp.vm_amount) + "  " +
 		"value: " + std::to_string(comp.value) + "  " +
-		"count: " + std::to_string(comp.count) + "||\n";
+		"count: " + std::to_string(comp.count) + "||\n";*/
+	os << std::to_string(comp.code) + "   " +
+		comp.mark + "   " +
+		comp.processor + "   " +
+		std::to_string(comp.frequency) + "   " +
+		std::to_string(comp.ram_amount) + "   " +
+		std::to_string(comp.hdd_capacity) + "   " +
+		std::to_string(comp.vm_amount) + "   " +
+		std::to_string(comp.value) + "   " +
+		std::to_string(comp.count) + "\n";
 	return os;
 }
 
@@ -223,7 +233,7 @@ public:
 	}
 };
 
-//×òî ýòî?!?!?!?
+//Ã—Ã²Ã® Ã½Ã²Ã®?!?!?!?
 class ProcAcc
 {
 protected:
@@ -274,23 +284,6 @@ public:
 	}
 };
 
-/*class Counter //ìíå íå íóæíî âðîäå
-{
-protected:
-	int count;
-
-public:
-	Counter() :count(0) {}
-
-	void operator () (Computer comp)
-	{
-		count = count + comp.sumOfHDD;
-	}
-	int getCount()
-	{
-		return count;
-	}
-};*/
 
 class VMAcc
 {
@@ -418,7 +411,7 @@ public:
 
 	bool findByHDD(int hdd, std::vector<Computer>::iterator &it)
 	{
-	    HDDPred pred = HDDPred(HDD);
+		HDDPred pred = HDDPred(HDD);
 		it = std::find_if(vect.begin(), vect.end(), pred);
 		return it != vect.end();
 	}
@@ -428,8 +421,8 @@ public:
 		ProcPred pred = ProcPred(proc);
 		ProcComp comp = ProcComp();
 		std::sort(vect.begin(), vect.end(), comp);
-		P c = Computer(0, "", proc, 0, 0, 0, 0, 0, 0);//???????????????
-		if (std::binary_search(vect.begin(), vect.end(), c, pred))
+		P c = Computer(0, "", proc, 0, 0, 0, 0, 0, 0);
+		if (std::binary_search(vect.begin(), vect.end(), c, comp))
 		{
 			it = std::find_if(vect.begin(), vect.end(), pred);
 			return true;
@@ -446,7 +439,7 @@ public:
 		RAMComp comp = RAMComp();
 		P c = Computer(0, "", "", 0, ram, 0, 0, 0, 0);
 		std::sort(vect.begin(), vect.end(), comp);
-		if (std::binary_search(vect.begin(), vect.end(), c, pred))
+		if (std::binary_search(vect.begin(), vect.end(), c, comp))
 		{
 			it = std::find_if(vect.begin(), vect.end(), pred);
 			return true;
@@ -463,7 +456,7 @@ public:
 		VMComp comp = VMComp();
 		std::sort(vect.begin(), vect.end(), comp);
 		P c = Computer(0, "", "", 0, 0, 0, vm, 0, 0);
-		if (std::binary_search(vect.begin(), vect.end(), c, pred))
+		if (std::binary_search(vect.begin(), vect.end(), c, comp))
 		{
 			it = std::find_if(vect.begin(), vect.end(), pred);
 			return true;
@@ -480,7 +473,7 @@ public:
 		HDDComp comp = HDDComp();
 		std::sort(vect.begin(), vect.end(), comp);
 		P c = Computer(0, "", "", 0, 0, hdd, 0, 0, 0);
-		if (std::binary_search(vect.begin(), vect.end(), c, pred))
+		if (std::binary_search(vect.begin(), vect.end(), c, comp))
 		{
 			it = std::find_if(vect.begin(), vect.end(), pred);
 			return true;
@@ -518,16 +511,18 @@ public:
 		std::for_each(vect.begin(), vect.end(), acc);
 		subv = acc.getSet();
 	}
-	void consoleInput()//??????????????????
+
+
+
+	void consoleInput()
 	{
-		std::istream_iterator<P> is(std::cin);
 		vect.clear();
-		P comp = *is;
-		while (comp.code != -99)
+		P comp;
+		while (true)
 		{
+			comp = inputComputer();
 			add(comp);
-			is++;
-			comp = *is;
+			if (inputInt("Do you want to continue input?(1-yes, 0-no): ", 0, 1) == 0) return;
 		}
 	}
 
@@ -549,11 +544,12 @@ public:
 			std::istream_iterator<P> is(fin);
 			vect.clear();
 			P comp = *is++;
-			while (comp.code != -99)
+			while (!fin.fail() && !fin.eof())
 			{
 				add(comp);
 				comp = *is++;
 			}
+				add(comp);
 			fin.close();
 		}
 		else
@@ -566,7 +562,6 @@ public:
 		if (fout.is_open())
 		{
 			copy(vect.begin(), vect.end(), std::ostream_iterator<P>(fout, "\n"));
-			fout << "-99";
 			fout.close();
 		}
 		else
@@ -582,7 +577,6 @@ public:
 		if (fout.is_open())
 		{
 			copy(subv.begin(), subv.end(), std::ostream_iterator<P>(fout, "\n"));
-			fout << "-99";
 			fout.close();
 		}
 		else
@@ -611,6 +605,7 @@ int inputInt(std::string message, int min = 0, int max = INT_MAX)
 		try
 		{
 			std::cin >> str;
+			//if (str == "exit" || str == "EXIT") throw "exit";  //Ð½Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚, Ñ…Ð·
 			res = std::stoi(str);
 			while (res < min || res > max)
 			{
@@ -649,4 +644,3 @@ Computer inputComputer()
 
 	return Computer(_code, _mark, _proc, _freq, _ram, _hdd, _vm, _value, _count);
 }
-
