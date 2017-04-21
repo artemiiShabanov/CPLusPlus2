@@ -520,9 +520,17 @@ public:
 		P comp;
 		while (true)
 		{
-			comp = inputComputer();
+			try 
+			{
+				comp = inputComputer();
+			}
+			catch (const char* str)
+			{
+				return;
+			}
+
 			add(comp);
-			if (inputInt("Do you want to continue input?(1-yes, 0-no): ", 0, 1) == 0) return;
+			//if (inputInt("Do you want to continue input?(1-yes, 0-no): ", 0, 1) == 0) return;
 		}
 	}
 
@@ -605,7 +613,7 @@ int inputInt(std::string message, int min = 0, int max = INT_MAX)
 		try
 		{
 			std::cin >> str;
-			//if (str == "exit" || str == "EXIT") throw "exit";  //не работает, хз
+			if (str == "exit" || str == "EXIT") throw "exit";  //не работает, хз
 			res = std::stoi(str);
 			while (res < min || res > max)
 			{
@@ -627,7 +635,7 @@ Computer inputComputer()
 	int _code, _freq, _ram, _hdd, _vm, _value, _count;
 	std::string _mark, _proc;
 
-	std::cout << ">>>Computer input<<<" << std::endl;
+	std::cout << ">>>Computer input(enter \"exit\" for exit )<<<" << std::endl;
 	_code = inputInt("Enter code: ");
 	std::cout << "Enter mark: ";
 	std::cin >> _mark;
