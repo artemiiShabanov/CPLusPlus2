@@ -1,10 +1,9 @@
 // CPlusPlus2.cpp
 //#55. Модель компьютера характеризуется кодом и названием марки компьютера, 
 //типом процессора, частотой работы процессора, объемом оперативной памяти, 
-//объемом жесткого диска, объемом памяти видеокарты, стоимостью компьютера и
+//объемом жесткого диска, объемом памяти видеокарты, ценностью компьютера и
 //количеством экземпляров. Поиск по типу процессора, объему ОЗУ, памяти видеокарты 
 //и объему жесткого диска. 
-
 
 #include "stdafx.h"
 #include "Helper.h"
@@ -200,7 +199,7 @@ int main()
 				case 3:
 					cont.remove(it);
 					break;
-				case 0: 
+				case 0:
 					break;
 				}
 			}
@@ -228,6 +227,11 @@ int main()
 				break;
 			case 4://HDD
 				cont.findSubSetByHDD(inputInt("Enter hdd capacity: ", 0));
+				break;
+			}
+			if (cont.subv.size() == 0)
+			{
+				std::cout << "Subset is empty" << std::endl;
 				break;
 			}
 			printMenuConsoleFile();

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4B734498-BE21-4A51-9818-B32AC4F08893}</ProjectGuid>
+    <ProjectGuid>{979B6381-166D-432C-A70E-9AC5B558A04A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CPlusPlus2</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>

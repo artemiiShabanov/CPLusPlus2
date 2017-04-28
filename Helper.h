@@ -70,14 +70,14 @@ public:
 
 std::ostream& operator<<(std::ostream &os, const Computer &comp) {
 	/*os << "|| code: " + std::to_string(comp.code) + "  " +
-		"mark: " + comp.mark + "  " +
-		"proc: " + comp.processor + "  " +
-		"freq: " + std::to_string(comp.frequency) + "  " +
-		"ram: " + std::to_string(comp.ram_amount) + "  " +
-		"hdd: " + std::to_string(comp.hdd_capacity) + "  " +
-		"vm: " + std::to_string(comp.vm_amount) + "  " +
-		"value: " + std::to_string(comp.value) + "  " +
-		"count: " + std::to_string(comp.count) + "||\n";*/
+	"mark: " + comp.mark + "  " +
+	"proc: " + comp.processor + "  " +
+	"freq: " + std::to_string(comp.frequency) + "  " +
+	"ram: " + std::to_string(comp.ram_amount) + "  " +
+	"hdd: " + std::to_string(comp.hdd_capacity) + "  " +
+	"vm: " + std::to_string(comp.vm_amount) + "  " +
+	"value: " + std::to_string(comp.value) + "  " +
+	"count: " + std::to_string(comp.count) + "||\n";*/
 	os << std::to_string(comp.code) + "   " +
 		comp.mark + "   " +
 		comp.processor + "   " +
@@ -233,7 +233,7 @@ public:
 	}
 };
 
-//×òî ýòî?!?!?!?
+
 class ProcAcc
 {
 protected:
@@ -520,13 +520,19 @@ public:
 		P comp;
 		while (true)
 		{
-			try 
+			try
 			{
 				comp = inputComputer();
 			}
 			catch (const char* str)
 			{
-				return;
+				if (str == "exit")
+					return;
+				else
+				{
+					std::cout << str;
+					return;
+				}
 			}
 
 			add(comp);
@@ -557,7 +563,7 @@ public:
 				add(comp);
 				comp = *is++;
 			}
-				add(comp);
+			add(comp);
 			fin.close();
 		}
 		else
@@ -594,8 +600,6 @@ public:
 	}
 
 
-
-private:
 	std::vector<P> vect;
 	std::vector<P> subv;
 };
@@ -613,13 +617,16 @@ int inputInt(std::string message, int min = 0, int max = INT_MAX)
 		try
 		{
 			std::cin >> str;
-			if (str == "exit" || str == "EXIT") throw "exit";  //не работает, хз
+			if (str == "exit" || str == "EXIT") throw "exit"; 
 			res = std::stoi(str);
 			while (res < min || res > max)
 			{
 				std::cout << "Error(value < " << min << " or value > " << max << "). Repeat input: ";
-				std::cin >> res;
+				std::cin >> str;
+				if (str == "exit" || str == "EXIT") throw "exit";
+				res = std::stoi(str);
 			}
+
 			std::cout << std::endl;
 			return res;
 		}
@@ -652,3 +659,4 @@ Computer inputComputer()
 
 	return Computer(_code, _mark, _proc, _freq, _ram, _hdd, _vm, _value, _count);
 }
+
