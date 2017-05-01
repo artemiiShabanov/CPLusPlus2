@@ -384,7 +384,7 @@ public:
 	}
 
 	void change(std::vector<Computer>::iterator &it) {
-		*it = inputComputer();
+		*it = inputComputer(*it);
 	}
 
 
@@ -617,7 +617,8 @@ int inputInt(std::string message, int min = 0, int max = INT_MAX)
 		try
 		{
 			std::cin >> str;
-			if (str == "exit" || str == "EXIT") throw "exit"; 
+			if (str == "exit" || str == "EXIT") throw "exit";
+			if (str == "skip" || str == "SKIP") throw 's';
 			res = std::stoi(str);
 			while (res < min || res > max)
 			{
@@ -627,7 +628,6 @@ int inputInt(std::string message, int min = 0, int max = INT_MAX)
 				res = std::stoi(str);
 			}
 
-			std::cout << std::endl;
 			return res;
 		}
 		catch (std::exception& e)
@@ -646,10 +646,8 @@ Computer inputComputer()
 	_code = inputInt("Enter code: ");
 	std::cout << "Enter mark: ";
 	std::cin >> _mark;
-	std::cout << std::endl;
 	std::cout << "Enter processor type: ";
 	std::cin >> _proc;
-	std::cout << std::endl;
 	_freq = inputInt("Enter processor frequency: ");
 	_ram = inputInt("Enter ram amount: ");
 	_hdd = inputInt("Enter hdd capacity: ");
@@ -660,3 +658,32 @@ Computer inputComputer()
 	return Computer(_code, _mark, _proc, _freq, _ram, _hdd, _vm, _value, _count);
 }
 
+Computer inputComputer(Computer comp)
+{
+	int _code, _freq, _ram, _hdd, _vm, _value, _count;
+	std::string _mark, _proc;
+
+	std::cout << ">>>Computer input(enter \"exit\" for exit, \"skip\" for skip )<<<" << std::endl;
+	try { _code = inputInt("Enter code(current=" + std::to_string(comp.code) + "): "); }
+	catch (char) { _code = comp.code; }
+	std::cout << "Enter mark(current=" + comp.mark + "): ";
+	std::cin >> _mark;
+	if (_mark == "skip") { _mark = comp.mark; }
+	std::cout << "Enter processor type(current=" + comp.processor + "): ";
+	std::cin >> _proc;
+	if (_proc == "skip") { _proc = comp.processor; }
+	try { _freq = inputInt("Enter processor frequency(current=" + std::to_string(comp.frequency) + "): "); }
+	catch (char) { _freq = comp.code; }
+	try {_ram = inputInt("Enter ram amount(current=" + std::to_string(comp.ram_amount) + "): ");}
+	catch (char) { _ram = comp.code; }
+	try { _hdd = inputInt("Enter hdd capacity(current=" + std::to_string(comp.hdd_capacity) + "): "); }
+	catch (char) { _hdd = comp.code; }
+	try { _vm = inputInt("Enter video memory amount(current=" + std::to_string(comp.vm_amount) + "): "); }
+	catch (char) { _vm = comp.code; }
+	try { _value = inputInt("Enter value(current=" + std::to_string(comp.value) + "): "); }
+	catch (char) { _value = comp.code; }
+	try { _count = inputInt("Enter count of copmuters(current=" + std::to_string(comp.count) + "): "); }
+	catch (char) { _count = comp.code; }
+
+	return Computer(_code, _mark, _proc, _freq, _ram, _hdd, _vm, _value, _count);
+}
