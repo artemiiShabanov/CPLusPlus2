@@ -11,7 +11,7 @@
 
 void printMainMenu()
 {
-	std::cout << "-------------------------------------" << std::endl;
+	std::cout << "\n**********************************" << std::endl;
 	std::cout << "Command list:" << std::endl;
 	std::cout << " 1)Input" << std::endl;
 	std::cout << " 2)Output" << std::endl;
@@ -19,48 +19,48 @@ void printMainMenu()
 	std::cout << " 4)Add" << std::endl;
 	std::cout << " 5)Subset" << std::endl;
 	std::cout << " 0)Exit" << std::endl;
-	std::cout << "------------------------------" << std::endl;
+	std::cout << "**********************************" << std::endl;
 }
 
 void printMenuConsoleFile()
 {
-	std::cout << "-------------------------------------" << std::endl;
+	std::cout << "\n**********************************" << std::endl;
 	std::cout << " 1)Console" << std::endl;
 	std::cout << " 2)File" << std::endl;
 	std::cout << " 0)Exit" << std::endl;
-	std::cout << "------------------------------" << std::endl;
+	std::cout << "**********************************" << std::endl;
 }
 
 void printMenuFindParam()
 {
-	std::cout << "-------------------------------------" << std::endl;
+	std::cout << "\n**********************************" << std::endl;
 	std::cout << " 1)By processor type" << std::endl;
 	std::cout << " 2)By ram amount" << std::endl;
 	std::cout << " 3)By video memory amount" << std::endl;
 	std::cout << " 4)By hdd capacity" << std::endl;
 	std::cout << " 0)Exit" << std::endl;
-	std::cout << "------------------------------" << std::endl;
+	std::cout << "**********************************" << std::endl;
 }
 
 void printMenuSearch()
 {
-	std::cout << "-------------------------------------" << std::endl;
+	std::cout << "\n**********************************" << std::endl;
 	std::cout << "Command list:" << std::endl;
 	std::cout << " 1)Simple search" << std::endl;
 	std::cout << " 2)Binary search" << std::endl;
 	std::cout << " 0)Exit" << std::endl;
-	std::cout << "------------------------------" << std::endl;
+	std::cout << "**********************************" << std::endl;
 }
 
 void printAction()
 {
-	std::cout << "-------------------------------------" << std::endl;
+	std::cout << "\n**********************************" << std::endl;
 	std::cout << "Action with record:" << std::endl;
 	std::cout << " 1)Print" << std::endl;
 	std::cout << " 2)Change" << std::endl;
 	std::cout << " 3)Delete" << std::endl;
 	std::cout << " 0)Exit" << std::endl;
-	std::cout << "------------------------------" << std::endl;
+	std::cout << "**********************************" << std::endl;
 }
 
 std::string output_file_name()
@@ -95,10 +95,11 @@ std::string input_file_name()
 int main()
 {
 	MyContainer<> cont = MyContainer<>();
+	MyContainer<> subcont = MyContainer<>();
 	std::string str;
 	int n;
 	bool binarSearch;
-	bool found;
+	bool found = false;
 	std::string FName;
 	std::vector<Computer>::iterator it;
 
@@ -141,7 +142,8 @@ int main()
 			break;
 		case 3://FIND
 			printMenuSearch();
-			n = inputInt("Enter the command: ", 1, 2);
+			n = inputInt("Enter the command: ", 0, 2);
+			if (n == 0) break;
 			switch (n)
 			{
 			case 1://SIMPLE
@@ -153,7 +155,7 @@ int main()
 			}
 
 			printMenuFindParam();
-			n = inputInt("Enter the command: ", 1, 4);
+			n = inputInt("Enter the command: ", 0, 4);
 			switch (n)
 			{
 			case 1://PROC
@@ -182,32 +184,41 @@ int main()
 				else
 					found = cont.findByRAM(inputInt("Enter hdd capacity: ", 0), it);
 				break;
+			case 0:
+				break;
 			}
 			if (found)
-			{
-				std::cout << "Record found \n";
-				printAction();
-				n = inputInt("Enter the command: ", 0, 3);
-				switch (n)
+			{ 
+				while (true)
 				{
-				case 1:
-					std::cout << *it;
-					break;
-				case 2:
-					cont.change(it);
-					break;
-				case 3:
-					cont.remove(it);
-					break;
-				case 0:
-					break;
+					std::cout << "\n Record found \n";
+					printAction();
+					n = inputInt("Enter the command: ", 0, 3);
+					if (n == 0) break;
+					switch (n)
+					{
+					case 1:
+						std::cout << *(it);
+						break;
+					case 2:
+						cont.change(it);
+						break;
+					case 3:
+						cont.remove(it);
+						break;
+					}
+					if (n == 3) break;
 				}
 			}
 			else
 				std::cout << "Record not found \n";
 			break;
 		case 4://ADD
-			cont.add(inputComputer());
+			try
+			{
+				cont.add(inputComputer());
+			}
+			catch (const char*) {}
 			break;
 		case 5://SUBSET
 			printMenuFindParam();
@@ -217,33 +228,37 @@ int main()
 			case 1://PROC
 				std::cout << "Enter processor type: ";
 				std::cin >> str;
-				cont.findSubSetByProc(str);
+				subcont = cont.findSubSetByProc(str);
 				break;
 			case 2://RAM
-				cont.findSubSetByRAM(inputInt("Enter ram amount: ", 0));
+				subcont = cont.findSubSetByRAM(inputInt("Enter ram amount: ", 0));
 				break;
 			case 3://VM
-				cont.findSubSetByVM(inputInt("Enter vm amount: ", 0));
+				subcont = cont.findSubSetByVM(inputInt("Enter vm amount: ", 0));
 				break;
 			case 4://HDD
-				cont.findSubSetByHDD(inputInt("Enter hdd capacity: ", 0));
+				subcont = cont.findSubSetByHDD(inputInt("Enter hdd capacity: ", 0));
 				break;
 			}
-			if (cont.subv.size() == 0)
+			if (subcont.vect.size() == 0)
 			{
 				std::cout << "Subset is empty" << std::endl;
 				break;
+			}
+			else
+			{
+				std::cout <<  std::endl << subcont.vect.size() << " records found" << std::endl;
 			}
 			printMenuConsoleFile();
 			n = inputInt("Enter the command: ", 0, 2);
 			switch (n)
 			{
 			case 1:
-				cont.consoleOutputSub();
+				subcont.consoleOutput();
 				break;
 			case 2:
 				FName = output_file_name();
-				cont.fileOutputSub(FName);
+				subcont.fileOutput(FName);
 				break;
 			case 3:
 				break;

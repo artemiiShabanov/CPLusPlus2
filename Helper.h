@@ -60,10 +60,6 @@ public:
 		return	this->code == that.code;
 	}
 
-	bool operator < (const Computer &comp)
-	{
-		return this->code < comp.code; //áûëî ==
-	}
 
 };
 
@@ -78,19 +74,19 @@ std::ostream& operator<<(std::ostream &os, const Computer &comp) {
 	"vm: " + std::to_string(comp.vm_amount) + "  " +
 	"value: " + std::to_string(comp.value) + "  " +
 	"count: " + std::to_string(comp.count) + "||\n";*/
-	os << std::to_string(comp.code) + "   " +
-		comp.mark + "   " +
-		comp.processor + "   " +
-		std::to_string(comp.frequency) + "   " +
-		std::to_string(comp.ram_amount) + "   " +
-		std::to_string(comp.hdd_capacity) + "   " +
-		std::to_string(comp.vm_amount) + "   " +
-		std::to_string(comp.value) + "   " +
+	os << std::to_string(comp.code) + "\t" +
+		comp.mark + "\t" +
+		comp.processor + "\t" +
+		std::to_string(comp.frequency) + "\t" +
+		std::to_string(comp.ram_amount) + "\t" +
+		std::to_string(comp.hdd_capacity) + "\t" +
+		std::to_string(comp.vm_amount) + "\t" +
+		std::to_string(comp.value) + "\t" +
 		std::to_string(comp.count) + "\n";
 	return os;
 }
 
-std::istream& operator>> (std::istream& is, Computer &comp)
+std::istream& operator >> (std::istream& is, Computer &comp)
 {
 	is >> comp.code;
 	is >> comp.mark;
@@ -105,9 +101,11 @@ std::istream& operator>> (std::istream& is, Computer &comp)
 	return is;
 }
 
+
 Computer inputComputer();
 
 //Predicats and Comparators
+
 
 class ProcPred
 {
@@ -120,15 +118,11 @@ public:
 		proc = _proc;
 	}
 
-	bool operator () (Computer comp)
+	bool operator() (Computer comp)  
 	{
 		return comp.processor == proc;
 	}
 
-	bool operator () (Computer comp1, Computer comp2)
-	{
-		return comp1.processor == comp2.processor;
-	}
 };
 
 class RAMPred
@@ -142,15 +136,11 @@ public:
 		ram = _ram;
 	}
 
-	bool operator () (Computer comp)
+	bool operator() (Computer comp)
 	{
 		return comp.ram_amount == ram;
 	}
 
-	bool operator () (Computer comp1, Computer comp2)
-	{
-		return comp1.ram_amount == comp2.ram_amount;
-	}
 };
 
 class VMPred
@@ -169,13 +159,9 @@ public:
 		return comp.vm_amount == vm;
 	}
 
-	bool operator () (Computer comp1, Computer comp2)
-	{
-		return comp1.vm_amount == comp2.vm_amount;
-	}
 };
 
-class HDDPred
+class HDDPred 
 {
 protected:
 	int hdd;
@@ -191,13 +177,10 @@ public:
 		return comp.hdd_capacity == hdd;
 	}
 
-	bool operator () (Computer comp1, Computer comp2)
-	{
-		return comp1.hdd_capacity == comp2.hdd_capacity;
-	}
 };
 
-class ProcComp
+
+class ProcComp 
 {
 public:
 	bool operator () (Computer comp1, Computer comp2)
@@ -206,7 +189,7 @@ public:
 	}
 };
 
-class RAMComp
+class RAMComp 
 {
 public:
 	bool operator () (Computer comp1, Computer comp2)
@@ -224,7 +207,7 @@ public:
 	}
 };
 
-class HDDComp
+class HDDComp 
 {
 public:
 	bool operator () (Computer comp1, Computer comp2)
@@ -284,7 +267,6 @@ public:
 	}
 };
 
-
 class VMAcc
 {
 protected:
@@ -335,185 +317,156 @@ public:
 	}
 };
 
-
-
-
-template <class P = Computer>
-class MyContainer
+template <class P >
+class Container
 {
 public:
+	std::vector<P> vect;
 
-	MyContainer(int size)
+	typedef std::_Vector_iterator<std::_Vector_val<std::_Simple_types<P>>> my_iterator;
+
+	Container(int size)
 	{
 		vect = std::vector<P>(size);
 	}
 
-	MyContainer()
+	Container()
 	{
 		vect = std::vector<P>();
 	}
 
-	~MyContainer() {}
+	~Container() {}
 
-	bool add(P comp) {
-		if (!find(comp))
+	bool add(P p) {
+		if (!find(p))
 		{
-			vect.push_back(comp);
+			vect.push_back(p);
 			return true;
 		}
 		else
 			return false;
 	}
 
-
-	bool find(P comp, std::random_access_iterator_tag &it)
-	{
-		it = std::find(vect.begin(), vect.end(), comp);
-		return it != vect.end()
-	}
-
-	bool find(P comp)
-	{
-		std::vector<P>::iterator it =
-			std::find(vect.begin(), vect.end(), comp);
-		return it != vect.end();
-	}
-
-	void remove(std::vector<Computer>::iterator it) {
+	void remove(my_iterator &it) {
 		vect.erase(it);
 	}
 
-	void change(std::vector<Computer>::iterator &it) {
-		*it = inputComputer(*it);
-	}
-
-
-	bool findByProc(std::string proc, std::vector<Computer>::iterator &it)
+	template<class Pred>
+	bool find(Pred &p, my_iterator &it)
 	{
-		ProcPred pred = ProcPred(proc);
-		it = std::find_if(vect.begin(), vect.end(), pred);
+		it = std::find_if(vect.begin(), vect.end(), p);	
 		return it != vect.end();
 	}
 
-	bool findByRAM(int ram, std::vector<Computer>::iterator &it)
+	bool find(P p)
 	{
-		RAMPred pred = RAMPred(ram);
-		it = std::find_if(vect.begin(), vect.end(), pred);
-		return it != vect.end();
+		return std::find(vect.begin(), vect.end(), p) != vect.end();
 	}
 
-	bool findByVM(int vm, std::vector<Computer>::iterator &it)
+	template<class Comp>
+	bool find(my_iterator &it, P x, Comp &c)
 	{
-		VMPred pred = VMPred(vm);
-		it = std::find_if(vect.begin(), vect.end(), pred);
-		return it != vect.end();
+		std::sort(vect.begin(), vect.end(), c);
+		it = std::lower_bound(vect.begin(), vect.end(), x, c);
+		return !c(x, *it);
 	}
 
-	bool findByHDD(int hdd, std::vector<Computer>::iterator &it)
+	template<class Acc>
+	std::vector<P> findSubSet(Acc acc)
 	{
-		HDDPred pred = HDDPred(HDD);
-		it = std::find_if(vect.begin(), vect.end(), pred);
-		return it != vect.end();
-	}
-
-	bool findByProcBinary(std::string proc, std::vector<Computer>::iterator &it)
-	{
-		ProcPred pred = ProcPred(proc);
-		ProcComp comp = ProcComp();
-		std::sort(vect.begin(), vect.end(), comp);
-		P c = Computer(0, "", proc, 0, 0, 0, 0, 0, 0);
-		if (std::binary_search(vect.begin(), vect.end(), c, comp))
-		{
-			it = std::find_if(vect.begin(), vect.end(), pred);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool findByRAMBinary(int ram, std::vector<Computer>::iterator &it)
-	{
-		RAMPred pred = RAMPred(ram);
-		RAMComp comp = RAMComp();
-		P c = Computer(0, "", "", 0, ram, 0, 0, 0, 0);
-		std::sort(vect.begin(), vect.end(), comp);
-		if (std::binary_search(vect.begin(), vect.end(), c, comp))
-		{
-			it = std::find_if(vect.begin(), vect.end(), pred);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool findByVMBinary(int vm, std::vector<Computer>::iterator &it)
-	{
-		VMPred pred = VMPred(vm);
-		VMComp comp = VMComp();
-		std::sort(vect.begin(), vect.end(), comp);
-		P c = Computer(0, "", "", 0, 0, 0, vm, 0, 0);
-		if (std::binary_search(vect.begin(), vect.end(), c, comp))
-		{
-			it = std::find_if(vect.begin(), vect.end(), pred);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool findByHDDBinary(int hdd, std::vector<Computer>::iterator &it)
-	{
-		HDDPred pred = HDDPred(hdd);
-		HDDComp comp = HDDComp();
-		std::sort(vect.begin(), vect.end(), comp);
-		P c = Computer(0, "", "", 0, 0, hdd, 0, 0, 0);
-		if (std::binary_search(vect.begin(), vect.end(), c, comp))
-		{
-			it = std::find_if(vect.begin(), vect.end(), pred);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	void findSubSetByProc(std::string proc)
-	{
-		ProcAcc acc = ProcAcc(proc);
 		std::for_each(vect.begin(), vect.end(), acc);
-		subv = acc.getSet();
+		return acc.getSet();
+	}
+};
+
+template <class P = Computer >
+class MyContainer: public Container<Computer>
+{
+public:
+	typedef std::_Vector_iterator<std::_Vector_val<std::_Simple_types<P>>> my_iterator;
+
+
+	void change(my_iterator &it) {
+		try
+		{
+			*it = inputComputer(*it);
+		}
+		catch (const char* str)
+		{
+			if (str == "exit")
+				return;
+		}
 	}
 
-	void findSubSetByRAM(int ram)
+	bool findByProc(std::string proc, my_iterator &it)
 	{
-		RAMAcc acc = RAMAcc(ram);
-		std::for_each(vect.begin(), vect.end(), acc);
-		subv = acc.getSet();
+		return find(ProcPred(proc), it);
 	}
 
-	void findSubSetByVM(int vm)
+	bool findByRAM(int ram, my_iterator &it)
 	{
-		VMAcc acc = VMAcc(vm);
-		std::for_each(vect.begin(), vect.end(), acc);
-		subv = acc.getSet();
+		return find(RAMPred(ram), it);
 	}
 
-	void findSubSetByHDD(int hdd)
+	bool findByVM(int vm, my_iterator &it)
 	{
-		HDDAcc acc = HDDAcc(hdd);
-		std::for_each(vect.begin(), vect.end(), acc);
-		subv = acc.getSet();
+		return find(VMPred(vm), it);
 	}
 
+	bool findByHDD(int hdd, my_iterator &it)
+	{
+		return find(HDDPred(hdd), it);
+	}
 
+	bool findByProcBinary(std::string proc, my_iterator &it)
+	{
+		return find(it, Computer(0, "", proc, 0, 0, 0, 0, 0, 0), ProcComp());
+	}
 
+	bool findByRAMBinary(int ram, my_iterator &it)
+	{
+		return find(it, Computer(0, "", "", 0, ram, 0, 0, 0, 0), RAMComp());
+	}
+
+	bool findByVMBinary(int vm, my_iterator &it)
+	{
+		return find(it, Computer(0, "", "", 0, 0, 0, vm, 0, 0), VMComp());
+	}
+
+	bool findByHDDBinary(int hdd, my_iterator &it)
+	{
+		return find(it, Computer(0, "", "", 0, 0, hdd, 0, 0, 0), HDDComp());
+	}
+
+	MyContainer<Computer> findSubSetByProc(std::string proc)
+	{
+		MyContainer<Computer> res;
+		res.vect = findSubSet(ProcAcc(proc));
+		return res;
+	}
+
+	MyContainer<Computer> findSubSetByRAM(int ram)
+	{
+		MyContainer<Computer> res;
+		res.vect = findSubSet(RAMAcc(ram));
+		return res;
+	}
+
+	MyContainer<Computer> findSubSetByVM(int vm)
+	{
+		MyContainer<Computer> res;
+		res.vect = findSubSet(VMAcc(vm));
+		return res;
+	}
+
+	MyContainer<Computer> findSubSetByHDD(int hdd)
+	{
+		MyContainer<Computer> res;
+		res.vect = findSubSet(HDDAcc(hdd));
+		return res;
+	}
+	
+	//**************************************
 	void consoleInput()
 	{
 		vect.clear();
@@ -536,19 +489,20 @@ public:
 			}
 
 			add(comp);
-			//if (inputInt("Do you want to continue input?(1-yes, 0-no): ", 0, 1) == 0) return;
 		}
 	}
 
 	void consoleOutput()
 	{
-		copy(vect.begin(), vect.end(), std::ostream_iterator<P>(std::cout, "\n"));
+		if (vect.size() == 0)
+			std::cout << std::endl << "Container is empty" << std::endl;
+		else
+		{
+			std::cout << "code\tmark\tproc\tfreq\tram\thdd\tvideo\tvalue\tcount\n\n";
+			copy(vect.begin(), vect.end(), std::ostream_iterator<P>(std::cout, "\n"));
+		}
 	}
 
-	void consoleOutputSub()
-	{
-		copy(subv.begin(), subv.end(), std::ostream_iterator<P>(std::cout, "\n"));
-	}
 
 	void fileInput(std::string fn)
 	{
@@ -556,6 +510,7 @@ public:
 		if (fin.is_open())
 		{
 			std::istream_iterator<P> is(fin);
+			if (fin.eof()) return;
 			vect.clear();
 			P comp = *is++;
 			while (!fin.fail() && !fin.eof())
@@ -584,24 +539,7 @@ public:
 		}
 	}
 
-
-	void fileOutputSub(std::string fn)
-	{
-		std::fstream fout(fn, std::ios::out);
-		if (fout.is_open())
-		{
-			copy(subv.begin(), subv.end(), std::ostream_iterator<P>(fout, "\n"));
-			fout.close();
-		}
-		else
-		{
-			std::cout << "Error opening file";
-		}
-	}
-
-
-	std::vector<P> vect;
-	std::vector<P> subv;
+	
 };
 
 
@@ -630,7 +568,7 @@ int inputInt(std::string message, int min = 0, int max = INT_MAX)
 
 			return res;
 		}
-		catch (std::exception& e)
+		catch (std::exception&)
 		{
 			std::cout << "Wrong number!" << std::endl;
 		}
@@ -646,8 +584,10 @@ Computer inputComputer()
 	_code = inputInt("Enter code: ");
 	std::cout << "Enter mark: ";
 	std::cin >> _mark;
+	if (_mark == "exit") throw "exit";
 	std::cout << "Enter processor type: ";
 	std::cin >> _proc;
+	if (_proc == "exit") throw "exit";
 	_freq = inputInt("Enter processor frequency: ");
 	_ram = inputInt("Enter ram amount: ");
 	_hdd = inputInt("Enter hdd capacity: ");
@@ -668,13 +608,15 @@ Computer inputComputer(Computer comp)
 	catch (char) { _code = comp.code; }
 	std::cout << "Enter mark(current=" + comp.mark + "): ";
 	std::cin >> _mark;
+	if (_mark == "exit") throw "exit";
 	if (_mark == "skip") { _mark = comp.mark; }
 	std::cout << "Enter processor type(current=" + comp.processor + "): ";
 	std::cin >> _proc;
+	if (_proc == "exit") throw "exit";
 	if (_proc == "skip") { _proc = comp.processor; }
 	try { _freq = inputInt("Enter processor frequency(current=" + std::to_string(comp.frequency) + "): "); }
 	catch (char) { _freq = comp.code; }
-	try {_ram = inputInt("Enter ram amount(current=" + std::to_string(comp.ram_amount) + "): ");}
+	try { _ram = inputInt("Enter ram amount(current=" + std::to_string(comp.ram_amount) + "): "); }
 	catch (char) { _ram = comp.code; }
 	try { _hdd = inputInt("Enter hdd capacity(current=" + std::to_string(comp.hdd_capacity) + "): "); }
 	catch (char) { _hdd = comp.code; }
