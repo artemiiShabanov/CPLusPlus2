@@ -106,7 +106,6 @@ Computer inputComputer();
 
 //Predicats and Comparators
 
-
 class ProcPred
 {
 protected:
@@ -320,10 +319,12 @@ public:
 template <class P >
 class Container
 {
-public:
+protected:
 	std::vector<P> vect;
+public:
 
 	typedef std::_Vector_iterator<std::_Vector_val<std::_Simple_types<P>>> my_iterator;
+	typedef std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<P>>> my_const_iterator;
 
 	Container(int size)
 	{
@@ -368,7 +369,7 @@ public:
 	{
 		std::sort(vect.begin(), vect.end(), c);
 		it = std::lower_bound(vect.begin(), vect.end(), x, c);
-		return !c(x, *it);
+		return it!=vect.end() && !c(x, *it);
 	}
 
 	template<class Acc>
@@ -377,25 +378,25 @@ public:
 		std::for_each(vect.begin(), vect.end(), acc);
 		return acc.getSet();
 	}
+
+	void clear() { vect.clear(); }
+
+	int vectSize() { return vect.size(); }
+
+	my_const_iterator getBegin() { return vect.cbegin(); }
+
+	my_const_iterator getEnd() { return vect.cend(); }
 };
 
-template <class P = Computer >
 class MyContainer: public Container<Computer>
 {
 public:
-	typedef std::_Vector_iterator<std::_Vector_val<std::_Simple_types<P>>> my_iterator;
 
+	MyContainer() {}
 
-	void change(my_iterator &it) {
-		try
-		{
-			*it = inputComputer(*it);
-		}
-		catch (const char* str)
-		{
-			if (str == "exit")
-				return;
-		}
+	MyContainer(std::vector<Computer> _vect)
+	{
+		vect = _vect;
 	}
 
 	bool findByProc(std::string proc, my_iterator &it)
@@ -438,81 +439,34 @@ public:
 		return find(it, Computer(0, "", "", 0, 0, hdd, 0, 0, 0), HDDComp());
 	}
 
-	MyContainer<Computer> findSubSetByProc(std::string proc)
+	MyContainer findSubSetByProc(std::string proc)
 	{
-		MyContainer<Computer> res;
-		res.vect = findSubSet(ProcAcc(proc));
-		return res;
+		return MyContainer(findSubSet(ProcAcc(proc)));
 	}
 
-	MyContainer<Computer> findSubSetByRAM(int ram)
+	MyContainer findSubSetByRAM(int ram)
 	{
-		MyContainer<Computer> res;
-		res.vect = findSubSet(RAMAcc(ram));
-		return res;
+		return MyContainer(findSubSet(RAMAcc(ram)));
 	}
 
-	MyContainer<Computer> findSubSetByVM(int vm)
+	MyContainer findSubSetByVM(int vm)
 	{
-		MyContainer<Computer> res;
-		res.vect = findSubSet(VMAcc(vm));
-		return res;
+		return MyContainer(findSubSet(VMAcc(vm)));
 	}
 
-	MyContainer<Computer> findSubSetByHDD(int hdd)
+	MyContainer findSubSetByHDD(int hdd)
 	{
-		MyContainer<Computer> res;
-		res.vect = findSubSet(HDDAcc(hdd));
-		return res;
+		return MyContainer(findSubSet(HDDAcc(hdd)));
 	}
 	
-	//**************************************
-	void consoleInput()
+	void fileInput(std::fstream fin)
 	{
-		vect.clear();
-		P comp;
-		while (true)
-		{
-			try
-			{
-				comp = inputComputer();
-			}
-			catch (const char* str)
-			{
-				if (str == "exit")
-					return;
-				else
-				{
-					std::cout << str;
-					return;
-				}
-			}
-
-			add(comp);
-		}
-	}
-
-	void consoleOutput()
-	{
-		if (vect.size() == 0)
-			std::cout << std::endl << "Container is empty" << std::endl;
-		else
-		{
-			std::cout << "code\tmark\tproc\tfreq\tram\thdd\tvideo\tvalue\tcount\n\n";
-			copy(vect.begin(), vect.end(), std::ostream_iterator<P>(std::cout, "\n"));
-		}
-	}
-
-
-	void fileInput(std::string fn)
-	{
-		std::fstream fin(fn, std::ios::in);
 		if (fin.is_open())
 		{
-			std::istream_iterator<P> is(fin);
+			std::istream_iterator<Computer> is(fin);
 			if (fin.eof()) return;
 			vect.clear();
-			P comp = *is++;
+			Computer comp = *is++;
 			while (!fin.fail() && !fin.eof())
 			{
 				add(comp);
@@ -525,12 +479,11 @@ public:
 			std::cout << "File isn't exist!" << std::endl;
 	}
 
-	void fileOutput(std::string fn)
+	void fileOutput(std::fstream fout)
 	{
-		std::fstream fout(fn, std::ios::out);
 		if (fout.is_open())
 		{
-			copy(vect.begin(), vect.end(), std::ostream_iterator<P>(fout, "\n"));
+			copy(vect.begin(), vect.end(), std::ostream_iterator<Computer>(fout, "\n"));
 			fout.close();
 		}
 		else
@@ -539,11 +492,10 @@ public:
 		}
 	}
 
-	
 };
 
-
 //-----------------helpers------------------
+
 int inputInt(std::string message, int min = 0, int max = INT_MAX)
 {
 	std::string str;
@@ -615,17 +567,52 @@ Computer inputComputer(Computer comp)
 	if (_proc == "exit") throw "exit";
 	if (_proc == "skip") { _proc = comp.processor; }
 	try { _freq = inputInt("Enter processor frequency(current=" + std::to_string(comp.frequency) + "): "); }
-	catch (char) { _freq = comp.code; }
+	catch (char) { _freq = comp.frequency; }
 	try { _ram = inputInt("Enter ram amount(current=" + std::to_string(comp.ram_amount) + "): "); }
-	catch (char) { _ram = comp.code; }
+	catch (char) { _ram = comp.ram_amount; }
 	try { _hdd = inputInt("Enter hdd capacity(current=" + std::to_string(comp.hdd_capacity) + "): "); }
-	catch (char) { _hdd = comp.code; }
+	catch (char) { _hdd = comp.hdd_capacity; }
 	try { _vm = inputInt("Enter video memory amount(current=" + std::to_string(comp.vm_amount) + "): "); }
-	catch (char) { _vm = comp.code; }
+	catch (char) { _vm = comp.vm_amount; }
 	try { _value = inputInt("Enter value(current=" + std::to_string(comp.value) + "): "); }
-	catch (char) { _value = comp.code; }
+	catch (char) { _value = comp.value; }
 	try { _count = inputInt("Enter count of copmuters(current=" + std::to_string(comp.count) + "): "); }
-	catch (char) { _count = comp.code; }
+	catch (char) { _count = comp.count; }
 
 	return Computer(_code, _mark, _proc, _freq, _ram, _hdd, _vm, _value, _count);
+}
+
+void consoleOutput(MyContainer cont) 
+{
+	if (cont.vectSize() == 0)
+		std::cout << std::endl << "Container is empty" << std::endl;
+	else
+	{
+		std::cout << "code\tmark\tproc\tfreq\tram\thdd\tvideo\tvalue\tcount\n\n";
+		copy(cont.getBegin(), cont.getEnd(), std::ostream_iterator<Computer>(std::cout, "\n"));
+	}
+}
+
+void consoleInput(MyContainer &cont)
+{
+	cont.clear();
+	Computer comp;
+	while (true)
+	{
+		try
+		{
+			comp = inputComputer();
+		}
+		catch (const char* str)
+		{
+			if (str == "exit")
+				return;
+			else
+			{
+				std::cout << str;
+				return;
+			}
+		}
+		cont.add(comp);
+	}
 }

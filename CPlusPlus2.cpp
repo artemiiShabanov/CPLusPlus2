@@ -94,14 +94,14 @@ std::string input_file_name()
 
 int main()
 {
-	MyContainer<> cont = MyContainer<>();
-	MyContainer<> subcont = MyContainer<>();
+	MyContainer cont = MyContainer();
+	MyContainer subcont = MyContainer();
 	std::string str;
 	int n;
 	bool binarSearch;
 	bool found = false;
 	std::string FName;
-	std::vector<Computer>::iterator it;
+	std::_Vector_iterator<std::_Vector_val<std::_Simple_types<Computer>>> it ;
 
 	while (true)
 	{
@@ -115,11 +115,11 @@ int main()
 			switch (n)
 			{
 			case 1:
-				cont.consoleInput();
+				consoleInput(cont);
 				break;
 			case 2:
 				FName = input_file_name();
-				cont.fileInput(FName);
+				cont.fileInput(std::fstream(FName, std::ios::in));
 				break;
 			case 0:
 				break;
@@ -131,10 +131,11 @@ int main()
 			switch (n)
 			{
 			case 1:
-				cont.consoleOutput();
+				consoleOutput(cont);
 				break;
 			case 2:
-				cont.fileOutput(output_file_name());
+				FName = output_file_name();
+				cont.fileOutput(std::fstream(FName, std::ios::out));
 				break;
 			case 0:
 				break;
@@ -201,8 +202,15 @@ int main()
 						std::cout << *(it);
 						break;
 					case 2:
-						cont.change(it);
-						break;
+						try
+						{
+							*it = inputComputer(*it);
+							break;
+						}
+						catch (const char* str)
+						{
+							break;
+						}
 					case 3:
 						cont.remove(it);
 						break;
@@ -240,25 +248,25 @@ int main()
 				subcont = cont.findSubSetByHDD(inputInt("Enter hdd capacity: ", 0));
 				break;
 			}
-			if (subcont.vect.size() == 0)
+			if (subcont.vectSize() == 0)
 			{
 				std::cout << "Subset is empty" << std::endl;
 				break;
 			}
 			else
 			{
-				std::cout <<  std::endl << subcont.vect.size() << " records found" << std::endl;
+				std::cout <<  std::endl << subcont.vectSize() << " records found" << std::endl;
 			}
 			printMenuConsoleFile();
 			n = inputInt("Enter the command: ", 0, 2);
 			switch (n)
 			{
 			case 1:
-				subcont.consoleOutput();
+				consoleOutput(subcont);
 				break;
 			case 2:
 				FName = output_file_name();
-				subcont.fileOutput(FName);
+				subcont.fileOutput(std::fstream(FName, std::ios::out));
 				break;
 			case 3:
 				break;
