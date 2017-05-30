@@ -338,14 +338,10 @@ public:
 
 	~Container() {}
 
-	bool add(P p) {
-		if (!find(p))
-		{
+	void add(P p) {
+		
 			vect.push_back(p);
-			return true;
-		}
-		else
-			return false;
+		
 	}
 
 	void remove(my_iterator &it) {
@@ -355,8 +351,11 @@ public:
 	template<class Pred>
 	bool find(Pred &p, my_iterator &it)
 	{
-		it = std::find_if(vect.begin(), vect.end(), p);	
-		return it != vect.end();
+		my_iterator tmp = std::find_if(vect.begin(), vect.end(), p);	
+		if (tmp == vect.end())
+			return false;
+		it = tmp;
+		return true;
 	}
 
 	bool find(P p)
@@ -368,8 +367,11 @@ public:
 	bool find(my_iterator &it, P x, Comp &c)
 	{
 		std::sort(vect.begin(), vect.end(), c);
-		it = std::lower_bound(vect.begin(), vect.end(), x, c);
-		return it!=vect.end() && !c(x, *it);
+		my_iterator tmp = std::lower_bound(vect.begin(), vect.end(), x, c);
+		if (tmp == vect.end() || c(x, *tmp))
+			return false;
+		it = tmp;
+		return true;
 	}
 
 	template<class Acc>
@@ -464,8 +466,8 @@ public:
 		if (fin.is_open())
 		{
 			std::istream_iterator<Computer> is(fin);
-			if (fin.eof()) return;
 			vect.clear();
+			if (fin.eof()) return;
 			Computer comp = *is++;
 			while (!fin.fail() && !fin.eof())
 			{
@@ -613,6 +615,44 @@ void consoleInput(MyContainer &cont)
 				return;
 			}
 		}
+
 		cont.add(comp);
 	}
 }
+
+
+/*
+void inputComputer(Computer &comp)
+{
+	int _code, _freq, _ram, _hdd, _vm, _value, _count;
+	std::string _mark, _proc;
+
+	try {
+		std::cout << ">>>Computer input(enter \"exit\" for exit, \"skip\" for skip )<<<" << std::endl;
+		try { _code = inputInt("Enter code(current=" + std::to_string(comp.code) + "): "); }
+		catch (char) { _code = comp.code; }
+		std::cout << "Enter mark(current=" + comp.mark + "): ";
+		std::cin >> _mark;
+		comp.mark = _mark;
+		if (_mark == "exit") throw "exit";
+		if (_mark == "skip") { _mark = comp.mark; }
+		std::cout << "Enter processor type(current=" + comp.processor + "): ";
+		std::cin >> _proc;
+		comp.processor = _proc;
+		if (_proc == "exit") throw "exit";
+		if (_proc == "skip") { _proc = comp.processor; }
+		try { _freq = inputInt("Enter processor frequency(current=" + std::to_string(comp.frequency) + "): "); comp.frequency = _freq; }
+		catch (char) { _freq = comp.frequency; }
+		try { _ram = inputInt("Enter ram amount(current=" + std::to_string(comp.ram_amount) + "): "); comp.ram_amount = _ram; }
+		catch (char) { _ram = comp.ram_amount; }
+		try { _hdd = inputInt("Enter hdd capacity(current=" + std::to_string(comp.hdd_capacity) + "): "); comp.hdd_capacity = _hdd; }
+		catch (char) { _hdd = comp.hdd_capacity; }
+		try { _vm = inputInt("Enter video memory amount(current=" + std::to_string(comp.vm_amount) + "): "); comp.vm_amount = _vm; }
+		catch (char) { _vm = comp.vm_amount; }
+		try { _value = inputInt("Enter value(current=" + std::to_string(comp.value) + "): "); comp.value = _value; }
+		catch (char) { _value = comp.value; }
+		try { _count = inputInt("Enter count of copmuters(current=" + std::to_string(comp.count) + "): "); comp.count = _count; }
+		catch (char) { _count = comp.count; }
+	}
+	catch (const char*) { return; }
+}*/

@@ -175,15 +175,15 @@ int main()
 				break;
 			case 3://VM
 				if (binarSearch)
-					found = cont.findByRAMBinary(inputInt("Enter vm amount: ", 0), it);
+					found = cont.findByVMBinary(inputInt("Enter vm amount: ", 0), it);
 				else
-					found = cont.findByRAM(inputInt("Enter vm amount: ", 0), it);
+					found = cont.findByVM(inputInt("Enter vm amount: ", 0), it);
 				break;
 			case 4://HDD
 				if (binarSearch)
-					found = cont.findByRAMBinary(inputInt("Enter hdd capacity: ", 0), it);
+					found = cont.findByHDDBinary(inputInt("Enter hdd capacity: ", 0), it);
 				else
-					found = cont.findByRAM(inputInt("Enter hdd capacity: ", 0), it);
+					found = cont.findByHDD(inputInt("Enter hdd capacity: ", 0), it);
 				break;
 			case 0:
 				break;
